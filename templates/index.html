@@ -1,122 +1,143 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Placement Portal</title>
+{% extends "base.html" %}
+{% block title %}Home | Placement Portal{% endblock %}
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f2f6ff;
-        }
+{% block content %}
 
-        .navbar {
-            background: #1e3a8a;
-            color: white;
-            padding: 15px 30px;
-            font-size: 20px;
-        }
+<style>
+    /* HERO */
+    .hero {
+        height: 90vh;
+        background: url("https://images.unsplash.com/photo-1523580846011-d3a5bc25702b")
+            center/cover no-repeat;
+        display: flex;
+        align-items: center;
+        padding: 0 80px;
+    }
 
-        .container {
-            width: 80%;
-            margin: 60px auto;
-            text-align: center;
-        }
+    .hero-content {
+        max-width: 550px;
+        color: white;
+    }
 
-        h1 {
-            color: #1e3a8a;
-            margin-bottom: 10px;
-        }
+    .hero-content h1 {
+        font-size: 44px;
+        margin-bottom: 20px;
+    }
 
-        p {
-            color: #444;
-            margin-bottom: 40px;
-        }
+    .hero-content p {
+        font-size: 18px;
+        line-height: 1.6;
+        color: #dcfce7;
+    }
 
-        .cards {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-        }
+    .hero-buttons {
+        margin-top: 30px;
+    }
 
-        .card {
-            background: white;
-            width: 260px;
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
+    .hero-buttons a {
+        display: inline-block;
+        padding: 12px 25px;
+        margin-right: 15px;
+        background: #22c55e;
+        color: #14532d;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: bold;
+    }
 
-        .card h3 {
-            margin-bottom: 15px;
-            color: #333;
-        }
+    .hero-buttons a.secondary {
+        background: transparent;
+        color: white;
+        border: 2px solid #dcfce7;
+    }
 
-        .card a {
-            display: block;
-            margin: 10px 0;
-            padding: 10px;
-            text-decoration: none;
-            background: #1e3a8a;
-            color: white;
-            border-radius: 5px;
-        }
+    /* STATS */
+    .stats {
+        display: flex;
+        justify-content: space-around;
+        padding: 40px;
+        background: white;
+    }
 
-        .card a:hover {
-            background: #142766;
-        }
+    .stat-box {
+        text-align: center;
+    }
 
-        footer {
-            margin-top: 80px;
-            padding: 15px;
-            text-align: center;
-            background: #e5e7eb;
-            color: #555;
-            font-size: 14px;
-        }
-    </style>
-</head>
-<body>
+    .stat-box h2 {
+        color: #16a34a;
+        margin-bottom: 5px;
+    }
 
-    <!-- top bar -->
-    <div class="navbar">
-        Placement Portal
-    </div>
+    /* SECTION */
+    .section {
+        padding: 70px 80px;
+        display: flex;
+        gap: 50px;
+        align-items: center;
+    }
 
-    <!-- main content -->
-    <div class="container">
-        <h1>Welcome to Placement Portal</h1>
-        <p>Manage students, companies, jobs and placements in one place</p>
+    .section.alt {
+        background: #dcfce7;
+    }
 
-        <div class="cards">
+    .section img {
+        width: 45%;
+        border-radius: 12px;
+    }
 
-            <!-- student card -->
-            <div class="card">
-                <h3>Student</h3>
-                <a href="/login">Login</a>
-                <a href="/register/student">Register</a>
-            </div>
+    .section-text {
+        width: 55%;
+    }
+</style>
 
-            <!-- company card -->
-            <div class="card">
-                <h3>Company</h3>
-                <a href="/login">Login</a>
-                <a href="/register/company">Register</a>
-            </div>
+<!-- HERO -->
+<div class="hero">
+    <div class="hero-content">
+        <h1>Grow Your Career With Us</h1>
+        <p>
+            A trusted campus placement platform where students meet
+            verified companies and real opportunities.
+        </p>
 
-            <!-- admin card -->
-            <div class="card">
-                <h3>Admin</h3>
-                <a href="/login">Login</a>
-            </div>
-
+        <div class="hero-buttons">
+            <a href="{{ url_for('register') }}">Get Started</a>
+            <a href="{{ url_for('login') }}" class="secondary">Login</a>
         </div>
     </div>
+</div>
 
-    <footer>
-        © 2026 Placement Portal | College Project
-    </footer>
+<!-- STATS -->
+<div class="stats">
+    <div class="stat-box">
+        <h2>600+</h2>
+        <p>Students</p>
+    </div>
+    <div class="stat-box">
+        <h2>180+</h2>
+        <p>Companies</p>
+    </div>
+    <div class="stat-box">
+        <h2>400+</h2>
+        <p>Job Roles</p>
+    </div>
+</div>
 
-</body>
-</html>
+<!-- STUDENTS -->
+<div class="section">
+    <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d">
+    <div class="section-text">
+        <h2>For Students</h2>
+        <p>Register, apply for jobs, and track placements easily.</p>
+    </div>
+</div>
+
+<!-- COMPANIES -->
+<div class="section alt">
+    <div class="section-text">
+        <h2>For Companies</h2>
+        <p>Post jobs and hire verified campus talent.</p>
+    </div>
+    <img src="https://images.unsplash.com/photo-1556761175-4b46a572b786">
+</div>
+
+{% endblock %}

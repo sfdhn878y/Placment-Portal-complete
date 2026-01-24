@@ -1,103 +1,110 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Register</title>
+{% extends "base.html" %}
+{% block title %}Register | Placement Portal{% endblock %}
 
-    <style>
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f2f2f2;
-        }
+{% block content %}
 
-        .box {
-            width: 360px;
-            margin: 80px auto;
-            background: #ffffff;
-            padding: 20px;
-            border: 1px solid #ccc;
-        }
+<style>
+    .register-box {
+        width: 380px;
+        margin: 80px auto;
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
 
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+    .register-box h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #14532d;
+    }
 
-        label {
-            display: block;
-            margin-top: 10px;
-            font-size: 14px;
-        }
+    .register-box label {
+        display: block;
+        margin-top: 12px;
+        font-size: 14px;
+        font-weight: bold;
+        color: #14532d;
+    }
 
-        input, select {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            border: 1px solid #999;
-        }
+    .register-box input,
+    .register-box select {
+        width: 100%;
+        padding: 10px;
+        margin-top: 6px;
+        border: 1px solid #bbf7d0;
+        border-radius: 5px;
+        font-size: 14px;
+    }
 
-        button {
-            width: 100%;
-            margin-top: 20px;
-            padding: 10px;
-            background: black;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
+    .register-box input:focus,
+    .register-box select:focus {
+        outline: none;
+        border-color: #22c55e;
+    }
 
-        button:hover {
-            background: #333;
-        }
+    .register-box button {
+        width: 100%;
+        margin-top: 25px;
+        padding: 12px;
+        background: #22c55e;
+        color: #14532d;
+        border: none;
+        border-radius: 6px;
+        font-weight: bold;
+        font-size: 15px;
+        cursor: pointer;
+    }
 
-        .link {
-            text-align: center;
-            margin-top: 15px;
-        }
-    </style>
-</head>
+    .register-box button:hover {
+        background: #16a34a;
+        color: white;
+    }
 
-<body>
-<header>
-    <h1>Placement Portal</h1>
-    <nav>
-        <a href="#">Home</a>
-        <a href="#">Jobs</a>
-        <a href="#">Companies</a>
-        <a href="#">Contact</a>
-    </nav>
-</header>
+    .register-box .link {
+        text-align: center;
+        margin-top: 18px;
+        font-size: 14px;
+    }
 
+    .register-box .link a {
+        color: #16a34a;
+        font-weight: bold;
+        text-decoration: none;
+    }
 
-    <div class="box">
-        <h2>Create Account</h2>
+    .register-box .link a:hover {
+        text-decoration: underline;
+    }
+</style>
 
-        <form method="POST">
-            <label>Full Name</label>
-            <input type="text" name="name" required>
+<div class="register-box">
+    <h2>Create Account</h2>
 
-            <label>Email</label>
-            <input type="email" name="email" required>
+    <form method="POST">
+        <label>Full Name</label>
+        <input type="text" name="name" required>
 
-            <label>Password</label>
-            <input type="password" name="password" required>
+        <label>Email</label>
+        <input type="email" name="email" required>
 
-            <label>Register As</label>
-            <select name="role" required>
-                <option value="">-- select role --</option>
-                <option value="student">Student</option>
-                <option value="company">Company</option>
-            </select>
+        <label>Password</label>
+        <input type="password" name="password" required>
 
-            <button type="submit">Register</button>
-        </form>
+        <label>Register As</label>
+        <select name="role" required>
+            <option value="">-- select role --</option>
+            <option value="student">Student</option>
+            <option value="company">Company</option>
+        </select>
 
-        <div class="link">
-            Already have an account?
-            <a href="/login">Login</a>
-        </div>
+        <button type="submit">Register</button>
+    </form>
+
+    <div class="link">
+        Already have an account?
+        <a href="{{ url_for('login') }}">Login</a>
     </div>
-<footer>
-    
-</footer>
-</body>
-</html>
+</div>
+
+{% endblock %}
