@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placement Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f8;
+            color: #333;
+        }
+
+        header {
+            background-color: #0b5ed7;
+            color: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 24px;
+        }
+
+        nav a {
+            color: white;
+            margin-left: 20px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .hero {
+            padding: 60px 20px;
+            text-align: center;
+            background: linear-gradient(to right, #0b5ed7, #3b82f6);
+            color: white;
+        }
+
+        .hero h2 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        .buttons button {
+            padding: 12px 25px;
+            margin: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .student {
+            background-color: white;
+            color: #0b5ed7;
+        }
+
+        .recruiter {
+            background-color: #22c55e;
+            color: white;
+        }
+
+        .admin {
+            background-color: #f59e0b;
+            color: white;
+        }
+
+        .buttons button:hover {
+            opacity: 0.9;
+        }
+
+        .features {
+            padding: 50px 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 10px;
+            color: #0b5ed7;
+        }
+
+        footer {
+            background-color: #1f2937;
+            color: #d1d5db;
+            text-align: center;
+            padding: 15px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Placement Portal</h1>
+    <nav>
+        <a href="#">Home</a>
+        <a href="#">Jobs</a>
+        <a href="#">Companies</a>
+        <a href="#">Contact</a>
+        
+        {% if not session.get('user_id') %}
+        <a href="{{url_for('login')}}">Login</a>
+        <a href="{{url_for('register')}}">Reg</a>
+        {% endif %}
+
+        {% if session.get('user_id')  %}
+        <a href="{{url_for('logout')}}">Logout</a>
+        {% endif %}
+        
+
+        
+    </nav>
+</header>
+
+{% block content %}
+
+{% endblock %}
+
+
+<footer>
+    <p>© 2026 Placement Portal | All Rights Reserved</p>
+</footer>
+
+</body>
+</html>

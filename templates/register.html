@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f2f2f2;
+        }
+
+        .box {
+            width: 360px;
+            margin: 80px auto;
+            background: #ffffff;
+            padding: 20px;
+            border: 1px solid #ccc;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #999;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 20px;
+            padding: 10px;
+            background: black;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #333;
+        }
+
+        .link {
+            text-align: center;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+<header>
+    <h1>Placement Portal</h1>
+    <nav>
+        <a href="#">Home</a>
+        <a href="#">Jobs</a>
+        <a href="#">Companies</a>
+        <a href="#">Contact</a>
+    </nav>
+</header>
+
+
+    <div class="box">
+        <h2>Create Account</h2>
+
+        <form method="POST">
+            <label>Full Name</label>
+            <input type="text" name="name" required>
+
+            <label>Email</label>
+            <input type="email" name="email" required>
+
+            <label>Password</label>
+            <input type="password" name="password" required>
+
+            <label>Register As</label>
+            <select name="role" required>
+                <option value="">-- select role --</option>
+                <option value="student">Student</option>
+                <option value="company">Company</option>
+            </select>
+
+            <button type="submit">Register</button>
+        </form>
+
+        <div class="link">
+            Already have an account?
+            <a href="/login">Login</a>
+        </div>
+    </div>
+<footer>
+    
+</footer>
+</body>
+</html>
