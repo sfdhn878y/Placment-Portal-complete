@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Company Profile</title>
+    <style>
+        body { font-family: Arial; background: #f2f2f2; }
+        .box {
+            width: 500px;
+            margin: 60px auto;
+            background: white;
+            padding: 25px;
+            border: 1px solid #ddd;
+        }
+        label { display: block; margin-top: 12px; }
+        input, textarea { width: 100%; padding: 8px; }
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            background: #1e293b;
+            color: white;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+<div class="box">
+    <h2>Create Company Profile</h2>
+
+    <form method="POST">
+        <label>Company Name</label>
+        <input name="company_name" required>
+
+        <label>Industry</label>
+        <input name="industry">
+
+        <label>Website</label>
+        <input name="website">
+
+        <label>Location</label>
+        <input name="location">
+
+        <label>Company Size</label>
+        <input name="company_size">
+
+        <label>About Company</label>
+        <textarea name="description"></textarea>
+
+        <button>Create Profile</button>
+    </form>
+</div>
+</body>
+</html>

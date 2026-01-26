@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Company Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f2f2f2;
+            margin: 0;
+        }
+
+        .navbar {
+            background: #1e293b;
+            color: white;
+            padding: 15px 30px;
+        }
+
+        .navbar a {
+            color: #e5e7eb;
+            text-decoration: none;
+            float: right;
+            margin-left: 20px;
+            font-size: 14px;
+        }
+
+        .container {
+            width: 90%;
+            margin: 30px auto;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+
+        h2, h3 {
+            margin-top: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        table th, table td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        table th {
+            background: #f8fafc;
+        }
+
+        .status-approved {
+            color: green;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            color: orange;
+            font-weight: bold;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            padding: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="navbar">
+    Company Dashboard
+    <a href="/logout">Logout</a>
+</div>
+
+<div class="container">
+
+    <!-- COMPANY PROFILE SECTION -->
+<div class="card">
+
+{% if not company %}
+    <h2>Profile Incomplete</h2>
+    
+        <div class="warning">
+            <p>Your company profile is not completed yet.</p>
+            <a href="/company/create-profile">
+                <button>Complete Profile</button>
+            </a>
+        </div>
+
+    {% else %}
+        <h2>{{ company.company_name }}</h2>
+        <p><b>Industry:</b> {{ company.industry }}</p>
+        <p><b>Location:</b> {{ company.location }}</p>
+        <p><b>Company Size:</b> {{ company.company_size }}</p>
+
+        {% if company.website %}
+            <p><b>Website:</b> {{ company.website }}</p>
+        {% endif %}
+
+        <hr>
+        <h3>About</h3>
+        <p>{{ company.description }}</p>
+
+    {% endif %}
+    </div>
+
+
+    <!-- JOBS SECTION (ONLY IF PROFILE EXISTS) -->
+    {% if company %}
+    <div class="card">
+        <h3>Your Job Postings</h3>
+
+        {% if jobs %}
+        <table>
+            <tr>
+                <th>Title</th>
+                <th>Skills</th>
+                <th>Salary</th>
+                <th>Status</th>
+                <th>Applications</th>
+            </tr>
+
+            {% for job in jobs %}
+            <tr>
+                <td>{{ job.title }}</td>
+                <td>{{ job.skills }}</td>
+                <td>{{ job.salary }}</td>
+                <td>
+                    {% if job.is_approved %}
+                        <span class="status-approved">Approved</span>
+                    {% else %}
+                        <span class="status-pending">Pending</span>
+                    {% endif %}
+                </td>
+                <td>{{ job.applications | length }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+            <p>No jobs posted yet.</p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+</div>
+
+</body>
+</html>

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session
+from flask import Flask, render_template, request, redirect, session, url_for
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
@@ -64,6 +64,10 @@ class CompanyProfile(db.Model):
     company_name = db.Column(db.String(150))
     industry = db.Column(db.String(100))
     website = db.Column(db.String(150))
+
+    description = db.Column(db.Text)
+    location = db.Column(db.String(100))
+    company_size = db.Column(db.String(50))
 
     user = db.relationship("User", back_populates="company_profile")
     jobs = db.relationship("Job", back_populates="company")
@@ -132,7 +136,7 @@ def register():
         user = User(
             name=name,
             email=email,
-            password=generate_password_hash(password),
+            password=password,
             role=role,
             is_approved=False if role == "company" else True
         )
@@ -179,18 +183,19 @@ def login():
 
         user = User.query.filter_by(email=email).first()
         if not user:
+            print('186 line ')
             return "No user found"
 
         # ✅ FIXED password check
         if not (user.password, password):
             print(user.password,password)
-            return "Wrong password"
-
-        if user.role == "company" and not user.is_approved:
-            return "Company not approved yet"
-
+            return "Wrong password" 
         session["user_id"] = user.id
         session["role"] = user.role
+        if user.role == "company" and not user.is_approved:
+            return redirect(url_for("company_wait"))
+
+
 
         if user.role == "Admin":
             return redirect("/admin_dashboard")
@@ -202,6 +207,28 @@ def login():
     return render_template("login.html")
 
 
+
+@app.route("/company/wait")
+def company_wait():
+    # user must be logged in
+    if "user_id" not in session:
+        print('user not is session')
+        return redirect("/login")
+
+    # only for companies
+    if session.get("role") != "company":
+        return redirect("/login")
+
+    user = User.query.get(session["user_id"])
+
+    # if already approved, go straight to dashboard
+    if user.is_approved:
+        return redirect("/company/dashboard")
+
+    return render_template("company_wait.html")
+
+
+
 @app.route("/logout")
 def logout():
     session.clear()
@@ -209,7 +236,54 @@ def logout():
 
 
 
+@app.route("/company/dashboard")
+def company_dashboard():
+    if "user_id" not in session or session["role"] != "company":
+        return redirect("/login")
 
+    company = CompanyProfile.query.filter_by(
+        user_id=session["user_id"]
+    ).first()
+
+    jobs = []
+    if company:
+        jobs = Job.query.filter_by(company_id=company.id).all()
+
+    return render_template(
+        "company_dashboard.html",
+        company=company,
+        jobs=jobs
+    )
+    
+@app.route("/company/create-profile", methods=["GET", "POST"])
+def company_create_profile():
+    if "user_id" not in session or session["role"] != "company":
+        return redirect("/login")
+
+    existing = CompanyProfile.query.filter_by(
+        user_id=session["user_id"]
+    ).first()
+
+    if existing:
+        return redirect("/company/dashboard")
+
+    if request.method == "POST":
+        profile = CompanyProfile(
+            user_id=session["user_id"],
+            company_name=request.form["company_name"],
+            industry=request.form["industry"],
+            website=request.form["website"],
+            location=request.form["location"],
+            company_size=request.form["company_size"],
+            description=request.form["description"]
+        )
+        db.session.add(profile)
+        db.session.commit()
+
+        return redirect("/company/dashboard")
+
+
+    return render_template("company_create_profile.html")
 
 
 # =====================
