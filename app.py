@@ -157,9 +157,24 @@ def post_job():
 def index():
     return render_template("index.html")
 
-@app.route("/admin_dashboard")
-def admin():
-    return render_template("admin_dashboard.html")
+@app.route("/admin_dashboard",methods=['POST','GET'])
+def admin_dashboard():
+    total_c = User.query.filter_by(role="company").count()
+    print(total_c)
+    companies = User.query.filter_by(role="company").all()
+
+
+    user_id = request.args.get('user_id')
+    status = request.args.get("status")
+
+
+
+    if user_id and status:
+        user = User.query.get(user_id)
+        if user:
+            user.is_approved = int(status)
+            db.session.commit()
+    return render_template("admin_dashboard.html",total_c=total_c,user_id=user_id,companies=companies)
 
 
 @app.route("/register", methods=["GET", "POST"])

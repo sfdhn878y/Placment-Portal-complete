@@ -166,7 +166,7 @@
             <!-- stats cards -->
             <div class="cards">
                 <div class="card">
-                    <h2>25</h2>
+                    <h2>{{total_c}}</h2>
                     <p>Total Companies</p>
                 </div>
                 <div class="card">
@@ -182,7 +182,7 @@
                     <p>Job Applications</p>
                 </div>
             </div>
-
+          
             <!-- company approvals -->
             <div class="section">
                 <h3>Company Approval Requests</h3>
@@ -193,17 +193,27 @@
                         <th>Industry</th>
                         <th>Action</th>
                     </tr>
+            {% for cmp in companies %}
 
                     <tr>
-                        <td>ABC Tech</td>
+                        <td>{{cmp.name}}</td>
                         <td>Software</td>
                         <td>
-                            <button class="btn btn-approve">Approve</button>
-                            <button class="btn btn-reject">Reject</button>
+            <form action="{{ url_for('admin_dashboard') }}" method="GET" style="display:inline;">
+                <input type="hidden" name="status" value="1">
+                 <input type="hidden" name="user_id" value={{cmp.id}}>
+                <button class="button button-primary">Approve</button>
+            </form>
+           <form action="{{ url_for('admin_dashboard') }}" method="GET" style="display:inline;">
+                <input type="hidden" name="status" value="0">
+                 <input type="hidden" name="user_id" value={{cmp.id}}>
+                <button class="button button-primary">Rejct</button>
+            </form>
                         </td>
                     </tr>
 
                     <tr>
+              {% endfor %}
                         <td>Green Foods</td>
                         <td>Food</td>
                         <td>
