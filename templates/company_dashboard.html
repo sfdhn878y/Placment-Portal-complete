@@ -37,10 +37,6 @@
             border: 1px solid #ddd;
         }
 
-        h2, h3 {
-            margin-top: 0;
-        }
-
         table {
             width: 100%;
             border-collapse: collapse;
@@ -51,7 +47,6 @@
             border: 1px solid #ccc;
             padding: 10px;
             font-size: 14px;
-            text-align: left;
         }
 
         table th {
@@ -85,75 +80,109 @@
 
 <div class="container">
 
-    <!-- COMPANY PROFILE SECTION -->
+<!-- COMPANY PROFILE -->
 <div class="card">
 
-{% if not company %}
     <h2>Profile Incomplete</h2>
-    
-        <div class="warning">
-            <p>Your company profile is not completed yet.</p>
-            <a href="/company/create-profile">
-                <button>Complete Profile</button>
-            </a>
-        </div>
-
-    {% else %}
-        <h2>{{ company.company_name }}</h2>
-        <p><b>Industry:</b> {{ company.industry }}</p>
-        <p><b>Location:</b> {{ company.location }}</p>
-        <p><b>Company Size:</b> {{ company.company_size }}</p>
-
-        {% if company.website %}
-            <p><b>Website:</b> {{ company.website }}</p>
-        {% endif %}
-
-        <hr>
-        <h3>About</h3>
-        <p>{{ company.description }}</p>
-
-    {% endif %}
+    <div class="warning">
+        <p>Your company profile is not completed yet.</p>
+        <a href="{{url_for('company_create_profile')}}">
+            <button>Complete Profile</button>
+        </a>
     </div>
 
+    <h2>{{ company.company_name }}</h2>
+    <p><b>Industry:</b> {{ company.industry }}</p>
+    <p><b>Location:</b> {{ company.location }}</p>
+    <p><b>Company Size:</b> {{ company.company_size }}</p>
 
-    <!-- JOBS SECTION (ONLY IF PROFILE EXISTS) -->
-    {% if company %}
-    <div class="card">
-        <h3>Your Job Postings</h3>
-
-        {% if jobs %}
-        <table>
-            <tr>
-                <th>Title</th>
-                <th>Skills</th>
-                <th>Salary</th>
-                <th>Status</th>
-                <th>Applications</th>
-            </tr>
-
-            {% for job in jobs %}
-            <tr>
-                <td>{{ job.title }}</td>
-                <td>{{ job.skills }}</td>
-                <td>{{ job.salary }}</td>
-                <td>
-                    {% if job.is_approved %}
-                        <span class="status-approved">Approved</span>
-                    {% else %}
-                        <span class="status-pending">Pending</span>
-                    {% endif %}
-                </td>
-                <td>{{ job.applications | length }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-        {% else %}
-            <p>No jobs posted yet.</p>
-        {% endif %}
-    </div>
+    {% if company.website %}
+        <p><b>Website:</b> {{ company.website }}</p>
     {% endif %}
 
+    <hr>
+    <h3>About</h3>
+    <p>{{ company.description }}</p>
+{% endif %}
 </div>
 
+<!-- JOBS SECTION -->
+{% if company %}
+<div class="card">
+    <h3>Your Job Postings</h3>
+
+    <!-- POST JOB BUTTON -->
+    <a href="/company/post-job">
+        <button style="margin-bottom:15px;">+ Post New Job</button>
+    </a>
+
+    {% if jobs %}
+    <table>
+        <tr>
+            <th>Title</th>
+            <th>Skills</th>
+            <th>Salary</th>
+            <th>Status</th>
+            <th>Applications</th>
+        </tr>
+
+        {% for job in jobs %}
+        <tr>
+            <td>{{ job.title }}</td>
+            <td>{{ job.skills }}</td>
+            <td>{{ job.salary }}</td>
+            <td>
+                {% if job.is_closed %}
+                    <span style="color:red;font-weight:bold;">Closed</span>
+                {% elif job.is_approved %}
+                    <span class="status-approved">Approved</span>
+                {% else %}
+                    <span class="status-pending">Pending</span>
+                {% endif %}
+            </td>
+
+                <td>{{ job.applications | length }}</td>
+
+                <td>
+                    <a href="/company/job/{{ job.id }}/applications">
+                        <button>View Applicants</button>
+                    </a>
+                </td>
+
+                <td>
+
+                    <!-- EDIT JOB -->
+                    <a href="/company/job/{{ job.id }}/edit">
+                        <button>Edit</button>
+                    </a>
+
+                    <!-- CLOSE JOB -->
+                    {% if not job.is_closed %}
+                        <a href="/company/job/{{ job.id }}/close">
+                            <button>Close</button>
+                        </a>
+                    {% else %}
+                        <span style="color:red;font-weight:bold;">Closed</span>
+                    {% endif %}
+
+                    <!-- DELETE JOB -->
+                    <a href="/company/job/{{ job.id }}/delete"
+                    onclick="return confirm('Are you sure you want to delete this job?');">
+                        <button style="margin-left:5px;">Delete</button>
+                    </a>
+                </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+        <p>No jobs posted yet.</p>
+        <p style="font-size:14px;color:#555;">
+            Click <b>Post New Job</b> to create your first opening.
+        </p>
+    {% endif %}
+</div>
+{% endif %}
+
+</div>
 </body>
 </html>

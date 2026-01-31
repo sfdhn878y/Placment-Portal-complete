@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Job Applications</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f2f2f2;
+        }
+        .box {
+            width: 90%;
+            margin: 40px auto;
+            background: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            font-size: 14px;
+        }
+        th {
+            background: #f8fafc;
+        }
+        .status {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+<div class="box">
+    <h2>Applications for {{ job.title }}</h2>
+
+    {% if applications %}
+    <table>
+        <tr>
+            <th>Student</th>
+            <th>Department</th>
+            <th>CGPA</th>
+            <th>Resume</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+
+        {% for app in applications %}
+        <tr>
+            <td>{{ app.student.user.name }}</td>
+            <td>{{ app.student.department }}</td>
+            <td>{{ app.student.cgpa }}</td>
+            <td>
+                {% if app.student.resume %}
+                    <a href="/{{ app.student.resume }}" target="_blank">
+                        View Resume
+                    </a>
+                {% else %}
+                    Not uploaded
+                {% endif %}
+            </td>
+
+            <td class="status">{{ app.status }}</td>
+
+            <td>
+                {% if app.status == "Applied" %}
+                    <a href="/application/{{ app.id }}/shortlist"><button>Shortlist</button></a>
+                    <a href="/application/{{ app.id }}/reject"><button>Reject</button></a>
+
+                {% elif app.status == "Shortlisted" %}
+                    <a href="/application/{{ app.id }}/select"><button>Select</button></a>
+                    <a href="/application/{{ app.id }}/reject"><button>Reject</button></a>
+
+                {% else %}
+                    —
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+        <p>No applications yet.</p>
+    {% endif %}
+
+    <br>
+    <a href="/company/dashboard">⬅ Back to Dashboard</a>
+</div>
+</body>
+</html>

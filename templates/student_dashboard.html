@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f2f2f2;
+            margin: 0;
+        }
+
+        .navbar {
+            background: #0f172a;
+            color: white;
+            padding: 15px 30px;
+        }
+
+        .navbar a {
+            color: #e5e7eb;
+            text-decoration: none;
+            float: right;
+            margin-left: 20px;
+            font-size: 14px;
+        }
+
+        .container {
+            width: 90%;
+            margin: 30px auto;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        th {
+            background: #f8fafc;
+        }
+
+        .status-applied {
+            color: #2563eb;
+            font-weight: bold;
+        }
+
+        .status-shortlisted {
+            color: #d97706;
+            font-weight: bold;
+        }
+
+        .status-selected {
+            color: green;
+            font-weight: bold;
+        }
+
+        .status-rejected {
+            color: red;
+            font-weight: bold;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            padding: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="navbar">
+    Student Dashboard
+    <a href="/logout">Logout</a>
+</div>
+
+<div class="container">
+
+<!-- STUDENT PROFILE -->
+<div class="card">
+    <h2>Welcome, {{ student.user.name }}</h2>
+
+    <p><b>Department:</b> {{ student.department }}</p>
+    <p><b>CGPA:</b> {{ student.cgpa }}</p>
+
+    {% if student.resume %}
+        <p>
+            <b>Resume:</b>
+            <a href="/{{ student.resume }}" target="_blank">View Resume</a>
+        </p>
+    {% else %}
+        <div class="warning">
+            <p>You have not uploaded your resume yet.</p>
+            <a href="/student/upload-resume">
+                <button>Upload Resume</button>
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- APPLIED JOBS -->
+<div class="card">
+    <h3>My Applications</h3>
+
+    {% if applications %}
+    <table>
+        <tr>
+            <th>Company</th>
+            <th>Job Title</th>
+            <th>Skills</th>
+            <th>Status</th>
+        </tr>
+
+        {% for app in applications %}
+        <tr>
+            <td>{{ app.job.company.company_name }}</td>
+            <td>{{ app.job.title }}</td>
+            <td>{{ app.job.skills }}</td>
+            <td>
+                {% if app.status == "Applied" %}
+                    <span class="status-applied">Applied</span>
+                {% elif app.status == "Shortlisted" %}
+                    <span class="status-shortlisted">Shortlisted</span>
+                {% elif app.status == "Selected" %}
+                    <span class="status-selected">Selected 🎉</span>
+                {% elif app.status == "Rejected" %}
+                    <span class="status-rejected">Rejected</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+        <p>You have not applied to any jobs yet.</p>
+    {% endif %}
+</div>
+
+</div>
+
+</body>
+</html>

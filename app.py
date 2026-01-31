@@ -82,7 +82,9 @@ class Job(db.Model):
     title = db.Column(db.String(150))
     skills = db.Column(db.String(200))
     salary = db.Column(db.String(50))
+
     is_approved = db.Column(db.Boolean, default=False)
+    is_closed = db.Column(db.Boolean, default=False)  # 👈 add this
 
     company = db.relationship("CompanyProfile", back_populates="jobs")
     applications = db.relationship("Application", back_populates="job")
@@ -106,12 +108,54 @@ class Application(db.Model):
 # ROUTES
 # # =====================
 
+
+
+
+@app.route("/company/post-job", methods=["GET", "POST"])
+def post_job():
+
+    # basic auth check
+    if "user_id" not in session or session.get("role") != "company":
+        return redirect("/login")
+
+    user = User.query.get(session["user_id"])
+
+    # company must be approved
+    if not user.is_approved:
+        return "Your company is not approved yet"
+
+    company = CompanyProfile.query.filter_by(user_id=user.id).first()
+
+    # safety check
+    if not company:
+        return redirect("/company/create-profile")
+
+    if request.method == "POST":
+        title = request.form["title"]
+        skills = request.form["skills"]
+        salary = request.form["salary"]
+
+        job = Job(
+            title=title,
+            skills=skills,
+            salary=salary,
+            company_id=company.id,
+            is_approved=False  # admin will approve later
+        )
+
+        db.session.add(job)
+        db.session.commit()
+
+        return redirect("/company/dashboard")
+
+    return render_template("post_job.html")
+
+
+
+
 @app.route("/")
 def index():
     return render_template("index.html")
-
-
-
 
 @app.route("/admin_dashboard")
 def admin():
@@ -175,6 +219,162 @@ def student_complete_profile():
     return render_template("student_profile.html")
 
 
+
+@app.route("/student/dashboard")
+def student_dashboard():
+
+    if "user_id" not in session:
+        return redirect("/login")
+
+    user = User.query.get(session["user_id"])
+
+    if not user or user.role != "student":
+        return redirect("/login")
+
+    student = StudentProfile.query.filter_by(
+        user_id=user.id
+    ).first()
+
+    if not student:
+        return redirect("/student/complete-profile")
+
+    # student's applications
+    applications = Application.query.filter_by(
+        student_id=student.id
+    ).all()
+
+    applied_job_ids = [app.job_id for app in applications]
+
+    # all approved & open jobs
+    jobs = Job.query.filter_by(
+        is_approved=True,
+        is_closed=False
+    ).all()
+
+    return render_template(
+        "student_dashboard.html",
+        student=student,
+        applications=applications,
+        jobs=jobs,
+        applied_job_ids=applied_job_ids
+    )
+
+
+@app.route("/student/apply/<int:job_id>")
+def apply_job(job_id):
+
+    if "user_id" not in session:
+        return redirect("/login")
+
+    user = User.query.get(session["user_id"])
+
+    if user.role != "student":
+        return redirect("/login")
+
+    student = StudentProfile.query.filter_by(
+        user_id=user.id
+    ).first()
+
+    # prevent duplicate application
+    existing = Application.query.filter_by(
+        job_id=job_id,
+        student_id=student.id
+    ).first()
+
+    if existing:
+        return redirect("/student/dashboard")
+
+    application = Application(
+        job_id=job_id,
+        student_id=student.id,
+        status="Applied"
+    )
+
+    db.session.add(application)
+    db.session.commit()
+
+    return redirect("/student/dashboard")
+
+
+
+@app.route("/application/<int:app_id>/shortlist")
+def shortlist_application(app_id):
+    app = Application.query.get_or_404(app_id)
+    app.status = "Shortlisted"
+    db.session.commit()
+    return redirect(request.referrer)
+
+
+@app.route("/application/<int:app_id>/select")
+def select_application(app_id):
+    app = Application.query.get_or_404(app_id)
+    app.status = "Selected"
+    db.session.commit()
+    return redirect(request.referrer)
+
+
+@app.route("/application/<int:app_id>/reject")
+def reject_application(app_id):
+    app = Application.query.get_or_404(app_id)
+    app.status = "Rejected"
+    db.session.commit()
+    return redirect(request.referrer)
+
+
+
+@app.route("/company/job/<int:job_id>/applications")
+def view_job_applications(job_id):
+
+    if "user_id" not in session or session.get("role") != "company":
+        return redirect("/login")
+
+    job = Job.query.get_or_404(job_id)
+
+    # security check: job must belong to logged-in company
+    company = CompanyProfile.query.filter_by(
+        user_id=session["user_id"]
+    ).first()
+
+    if job.company_id != company.id:
+        return "Unauthorized access"
+
+    applications = Application.query.filter_by(job_id=job.id).all()
+
+    return render_template(
+        "job_applications.html",
+        job=job,
+        applications=applications
+    )
+
+@app.route("/company/job/<int:job_id>/edit", methods=["GET", "POST"])
+def edit_job(job_id):
+    # make sure company is logged in
+    if session.get("role") != "company":
+        return redirect("/login")
+
+    job = Job.query.get_or_404(job_id)
+
+    # optional: extra safety check
+    if job.company_id != session.get("user_id"):
+        return "Unauthorized", 403
+
+    if request.method == "POST":
+        # update fields
+        job.title = request.form["title"]
+        job.skills = request.form["skills"]
+        job.salary = request.form["salary"]
+        job.description = request.form["description"]
+
+        # once edited, send for approval again
+        job.is_approved = False
+
+        db.session.commit()
+        return redirect("/company/dashboard")
+
+    return render_template("edit_job.html", job=job)
+
+
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -193,7 +393,7 @@ def login():
         session["user_id"] = user.id
         session["role"] = user.role
         if user.role == "company" and not user.is_approved:
-            return redirect(url_for("company_wait"))
+            return redirect(("/company_wait"))
 
 
 
@@ -235,14 +435,19 @@ def logout():
     return redirect("/login")
 
 
-
 @app.route("/company/dashboard")
 def company_dashboard():
-    if "user_id" not in session or session["role"] != "company":
+
+    if "user_id" not in session:
+        return redirect("/login")
+
+    user = User.query.get(session["user_id"])
+
+    if not user or user.role != "company":
         return redirect("/login")
 
     company = CompanyProfile.query.filter_by(
-        user_id=session["user_id"]
+        user_id=user.id
     ).first()
 
     jobs = []
@@ -284,6 +489,48 @@ def company_create_profile():
 
 
     return render_template("company_create_profile.html")
+
+@app.route("/company/job/<int:job_id>/close")
+def close_job(job_id):
+
+    if "user_id" not in session or session.get("role") != "company":
+        return redirect("/login")
+
+    job = Job.query.get_or_404(job_id)
+
+    company = CompanyProfile.query.filter_by(
+        user_id=session["user_id"]
+    ).first()
+
+    if job.company_id != company.id:
+        return "Unauthorized", 403
+
+    job.is_closed = True
+    db.session.commit()
+
+    return redirect("/company/dashboard")
+
+
+@app.route("/company/job/<int:job_id>/delete")
+def delete_job(job_id):
+
+    if "user_id" not in session or session.get("role") != "company":
+        return redirect("/login")
+
+    job = Job.query.get_or_404(job_id)
+
+    company = CompanyProfile.query.filter_by(
+        user_id=session["user_id"]
+    ).first()
+
+    # make sure company owns this job
+    if job.company_id != company.id:
+        return "Unauthorized", 403
+
+    db.session.delete(job)
+    db.session.commit()
+
+    return redirect("/company/dashboard")
 
 
 # =====================
